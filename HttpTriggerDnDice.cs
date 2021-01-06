@@ -34,8 +34,19 @@ namespace HendrickxConsulting.DnDice
 
         public static string rollTheDice(string roll)
         {
-            char[] delimiterChars = { 'd', 'D', ' ', '+'};
-            string[] words = roll.Split(delimiterChars);
+            //First split in big parts: ex. 1D20+2D6+10 to [1D20, 2D6, 10]
+            char[] delimiterChars = { '+'};
+            string[] roleParts = roll.Split(delimiterChars);
+
+            foreach (string part in roleParts)
+            {
+                //Then split nb of dice from type of dice.
+                
+            }
+
+
+
+            delimiterChars = { 'd', 'D'};
 
             Random ran = new Random();
             int num = ran.Next(1, Convert.ToInt32(words[1]));
