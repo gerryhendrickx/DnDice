@@ -17,7 +17,7 @@ namespace HendrickxConsulting.DnDice
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("DnDice function processed a request.");
 
             string roll = req.Query["roll"];
 
@@ -27,31 +27,43 @@ namespace HendrickxConsulting.DnDice
 
             string result = rollTheDice(roll);
 
-            string responseMessage = $"{roll}: {result} ";
 
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult(result);
         }
 
         public static string rollTheDice(string roll)
         {
+            Random ran = new Random();
+            string result = $"Roll: {roll} =" ;
+            int total = 0;
+
             //First split in big parts: ex. 1D20+2D6+10 to [1D20, 2D6, 10]
-            char[] delimiterChars = { '+'};
-            string[] roleParts = roll.Split(delimiterChars);
+            string[] roleParts = roll.Split('+');
 
             foreach (string part in roleParts)
             {
                 //Then split nb of dice from type of dice.
-                
+                char[] delimiters = { 'd', 'D'};
+                string[] nbAndType = part.Split(delimiters);
+                int nb = Convert.ToInt32(nbAndType[0].Trim());
+
+                if(nbAndType.Length > 1){
+                    int type = Convert.ToInt32(nbAndType[1].Trim());
+
+                    for(int i = 0; i < nb; i++){
+                        int value = ran.Next(1, type);
+                        result += " " + value;
+                        total += value;
+                    }
+                }
+                else { //only number, not a dice roll
+                    result += " " + nb;
+                    total += nb;
+                } 
+
             }
 
-
-
-            delimiterChars = { 'd', 'D'};
-
-            Random ran = new Random();
-            int num = ran.Next(1, Convert.ToInt32(words[1]));
-
-            return num.ToString();
+            return result + " = " + total;
         }
     }
 }
